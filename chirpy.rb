@@ -183,7 +183,12 @@ class Chirpy
   
   # Returns true or false
   def friendship_exists?(able, baker)
-    get("friendships/exists", :url_params => {:user_a => able, :user_b => baker}).%('friends').inner_html == 'true'
+    response = get "friendships/exists", :url_params => {:user_a => able, :user_b => baker}
+    if response.ok?
+      response.%('friends').inner_html == 'true'
+    else
+      response
+    end
   end
   
   # Unfinished
