@@ -181,8 +181,9 @@ class Chirpy
     delete path, :url_params => params
   end
   
+  # Returns true or false
   def friendship_exists?(able, baker)
-    get "friendships/exists", :url_params => {:user_a => able, :user_b => baker}
+    get("friendships/exists", :url_params => {:user_a => able, :user_b => baker}).%('friends').inner_html == 'true'
   end
   
   # Unfinished
