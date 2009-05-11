@@ -123,7 +123,7 @@ class Chirpy
     get path, :url_params => params
   end
 
-  def friends(user, params = {})
+  def friends(user = nil, params = {})
     if user.is_a?(Hash)
       params = user
       user = nil
@@ -133,8 +133,14 @@ class Chirpy
     get path, :url_params => params
   end
 
-  def followers(params = {})
-    get "statuses/followers", :url_params => params
+  def followers(user = nil, params = {})
+    if user.is_a?(Hash)
+      params = user
+      user = nil
+    end
+    
+    path = user ? "statuses/followers/#{user}" : "statuses/followers"
+    get path, :url_params => params
   end
   
   def direct_messages(params = {})
