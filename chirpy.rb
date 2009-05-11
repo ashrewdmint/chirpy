@@ -248,7 +248,7 @@ private
     # Parse with Hpricot and check for errors
   
     if (response)
-      response = Hpricot(response)
+      response = Hpricot.XML(response)
       error = response.search('error')
       if (error.length > 0)
         status = {:ok => false, :error_message => error.first.inner_html.strip}
