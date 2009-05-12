@@ -77,7 +77,7 @@ class Chirpy
   # Authentication required.
   
   def friends_timeline(params = {})
-    get "statuses/friends_timeline", :url_params => params
+    get "statuses/friends_timeline", params
   end
   
   # Gets a list of status updates from a specific user.
@@ -91,9 +91,9 @@ class Chirpy
         user = nil
     end
     if user
-      get "statuses/user_timeline/#{user}", :url_params => params
+      get "statuses/user_timeline/#{user}", params
     else
-      get "statuses/user_timeline", :url_params => params
+      get "statuses/user_timeline", params
     end
   end
   
@@ -102,7 +102,7 @@ class Chirpy
   # Authentication required.
 
   def mentions(params = {})
-    get "statuses/mentions", :url_params => params
+    get "statuses/mentions", params
   end
 
   #-- Status methods
@@ -110,7 +110,7 @@ class Chirpy
   # Shows a specific tweet. Authentication is only required if author is protected.
   
   def show_status(status_id)
-    get "statuses/show/#{status_id}", params
+    get "statuses/show/#{status_id}"
   end
   
   # Updates the status of the authenticated user.
@@ -140,7 +140,7 @@ class Chirpy
     end
     
     path = user ? "users/show/#{user}" : "users/show"
-    get path, :url_params => params
+    get path, params
   end
   
   # Gets a list of a user's friends.
@@ -153,7 +153,7 @@ class Chirpy
     end
     
     path = user ? "statuses/friends/#{user}" : "statuses/friends"
-    get path, :url_params => params
+    get path, params
   end
   
   # Gets a list of a user's followers.
@@ -169,7 +169,7 @@ class Chirpy
     end
     
     path = user ? "statuses/followers/#{user}" : "statuses/followers"
-    get path, :url_params => params
+    get path, params
   end
   
   # Gets a list of the messages sent to the authenticated user.
@@ -177,7 +177,7 @@ class Chirpy
   # Authentication required.
   
   def direct_messages(params = {})
-    get "direct_messages", :url_params => params
+    get "direct_messages", params
   end
   
   # Gets a list of the messages sent by the authenticated user.
@@ -185,7 +185,7 @@ class Chirpy
   # Authentication required.
   
   def direct_messages_sent(params = {})
-    get "direct_messages/sent", :url_params => params
+    get "direct_messages/sent", params
   end
   
   # Sends a direct message.
@@ -194,7 +194,7 @@ class Chirpy
   
   def direct_messages_new(recipient, text)
     post_params = {:user => recipient, :text => text}
-    post "direct_messages/new", :post => post_params
+    post "direct_messages/new", post_params
   end
   
   # --Friendship methods
@@ -211,7 +211,7 @@ class Chirpy
     end
     
     path = user ? "friendships/create/#{user}" : "friendships/create"
-    post path, :url_params => {:follow => true}.merge(params)
+    post path, {:follow => true}.merge(params)
   end
   
   # Destroys a friendship between the authenticated user and another user.
@@ -225,7 +225,7 @@ class Chirpy
     end
     
     path = user ? "friendships/create/#{user}" : "friendships/create"
-    delete path, :url_params => params
+    delete path, params
   end
   
   # Checks if a friendship exists between two users; returns true or false if no error occured.
@@ -234,28 +234,119 @@ class Chirpy
   # Authentication required.
   
   def friendship_exists?(able, baker)
-    response = get "friendships/exists", :url_params => {:user_a => able, :user_b => baker}
+    response = get "friendships/exists", {:user_a => able, :user_b => baker}
     if response.ok?
-      response.%('friends').inner_html == 'true'
+      response.data.%('friends').inner_html == 'true'
     else
       response
     end
   end
   
-  # Unfinished
+  #-- Social graph methods
   
-  # Social graph methods
+  # Returns ids for someone's friends
   
-  # Account methods
+  def friends_ids(user = nil, params = {})
+    if user.is_a?(Hash)
+      params = user
+      user = nil
+    end
+    path = user ? "friends/ids/#{user}" : "friends/ids"
+    get path, params
+  end
   
-  # Favorite methods
-  # The ones I like the most
+  # Returns ids for someone's followers
   
-  # Notification methods
+  def followers_ids(user = nil, params = {})
+    if user.is_a?(Hash)
+      params = user
+      user = nil
+    end
+    path = user ? "friends/ids/#{user}" : "friends/ids"
+    get path, params
+  end
   
-  # Block methods
+  #-- Account methods
   
-  # Help methods
+  # Use this to check if a username and password are valid.
+  # Returns a Chirpy instance if valid, otherwise, false.
+  
+  def self.verify_credentials(username, password)
+    chirpy = self.new(username, password)
+    chirpy.verify_credentials
+  end
+  
+  # Use this to check if an instance's username and password are valid.
+  #
+  # Authentication required.
+  
+  def verify_credentials
+    if auth_supplied?
+      response = get "account/verify_credentials"
+      response.ok? ? response : false
+    else
+      false
+    end
+  end
+  
+  # Gets information on rate limiting.
+  # Specify <tt>:authenticate => false</tt> to see rate limiting for current ip
+  
+  def rate_limit_status(params)
+    get "account/rate_limit_status", params
+  end
+  
+  # Ends the session of the authenticated user
+  
+  def end_session
+    post "account/end_session", :post => {}
+  end
+  
+  # Updates the authenticated user's delivery device. Must be one of:
+  # - sms
+  # - im
+  # - none
+  
+  def update_delivery_device(device)
+    post "account/update_delivery_device", :post => {:device => device}
+  end
+  
+  # Updates the authenticated user's colors (on their Twitter page).
+  #
+  # Please supply a hash with hexadecimal colors (e.g. "fff" or "ffffff").
+  # Don't include the "#" character in front of the color code.
+  # Here are the different values you can customize:
+  # - :background_color
+  # - :text_color
+  # - :sidebar_color
+  # - :sidebar_fill_color
+  # - :sidebar_border_color
+  
+  def update_profile_colors(colors)
+    return unless colors.is_a?(Hash)
+    post_data = {}
+    
+    colors.each_pair do |key, value|
+      post_data.store("profile_#{key}", value.gsub(/#/, ''))
+    end
+    
+    post "account/update_profile_colors", :post => post_data
+  end
+  
+  # Changes the authenticated user's image
+  # Must be jpg, gif, or png, less than 700 Kb.
+  
+  def update_profile_image(image)
+    
+  end
+  
+  #-- Favorite methods
+  
+  #-- Notification methods
+  
+  #-- Block methods
+  
+  #-- Help methods
 
 private
   
@@ -269,7 +360,7 @@ private
   # Calls request. By default, request will use the get method
   
   def get(path, params = {})
-    request params.merge({:path => path})
+    request params.merge({:path => path, :method => 'get'})
   end
   
   # Calls request with post method
@@ -283,26 +374,43 @@ private
   def delete(path, params = {})
     request params.merge({:path => path, :method => 'delete'})
   end
+  
+  def organize_params(params)
+    url_params_list = [:id, :user_id, :screen_name, :page, :since_id, :max, :count]
+    url_params      = {}
+    
+    params.each_pair do |key, value|
+      if url_params_list.include?(key)
+        url_params.store(key, value)
+        params.delete(key)
+      end
+    end
+    
+    params = {:method => 'get', :url_params => url_params}.merge(params)
+  end
 
   # Constructs the correct url (including authentication), uses RestClient to call Twitter,
   # parses the data with Hpricot, handles errors (both from RestClient and Twitter)
   # and returns the result, for great justice!
-  
-  # Resulting Hpricot objects have two custom methods, "status" and "ok?"
+
+  # Resulting objects have three methods, "status", "ok?", and "data".
   # Call "ok?" to check if there are errors. If there are errors, you can look inside the
   # hash returned by the "status" method, which gives you information on what went wrong.
+  #
+  # The Hpricot object can be retreived by calling the "data" method.
   
   def request(params)
-    # Default parameteres
-    params = {:method => 'get', :url_params => {}}.merge(params)
+    # Organize parameters
+    params = organize_params(params)
   
     url  = @@root + params[:path] + '.xml?' + params[:url_params].to_url_params
     user = params[:user]
     password = params[:password]
 
     # Simple authentication
-  
-    if auth_supplied?
+    
+    puts params[:authenticate] != false
+    if auth_supplied? and params[:authenticate] != false
       url = 'https://' + @username + ':' + @password + '@' + url
     else
       url = 'http://' + url
@@ -326,7 +434,7 @@ private
     # Parse with Hpricot and check for errors
     
     if (response)
-      response = Hpricot.XML(response)
+      response = Hpricot.XML(response, :fixup_tags => true)
       error = response.search('error')
       if (error.length > 0)
         status = {:ok => false, :error_message => error.first.inner_html.strip}
