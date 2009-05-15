@@ -333,14 +333,52 @@ class Chirpy
     post "account/update_profile_colors", :post => post_data
   end
   
-  # Changes the authenticated user's image
-  # Must be jpg, gif, or png, less than 700 Kb.
+  # Updates the user's profile information. Pass in a hash with symbols as keys.
+  #
+  # From: http://apiwiki.twitter.com/Twitter-REST-API-Method%3A-account%C2%A0update_profile
+  # - :name, 20 characters max.
+  # - :email, 40 characters max. Must be a valid email address.
+  # - :url, 100 characters max. Will be prepended with "http://" if not present.
+  # - :location, 30 characters max. The contents are not normalized or geocoded in any way.
+  # - :descriptionm 160 characters max.
   
-  def update_profile_image(image)
-    
+  def update_profile(params)
+    post 'account/update_profile', :post => params
   end
   
   #-- Favorite methods
+  
+  # Gets a list of a user's favorites. Pass :page => x to switch pages.
+  #
+  # Authentication required.
+  
+  def favorites(user = nil, params = {})
+    if user.is_a?(Hash)
+      params = user
+      user = nil
+    end
+    if user
+      get "favorites/#{user}", params
+    else
+      get "favorites", params
+    end
+  end
+  
+  # Adds a tweet to the authenticated user's favorites.
+  #
+  # Authentication required.
+  
+  def create_favorite(id)
+    post "favorites/create/#{id}", {}
+  end
+  
+  # Removes a tweet from the authenticated user's favorites
+  #
+  # Authentication required, Strong Bad.
+  
+  def destroy_favorite(id)
+    delete "favorites/destroy/#{id}"
+  end
   
   #-- Notification methods
   
@@ -374,20 +412,6 @@ private
   def delete(path, params = {})
     request params.merge({:path => path, :method => 'delete'})
   end
-  
-  def organize_params(params)
-    url_params_list = [:id, :user_id, :screen_name, :page, :since_id, :max, :count]
-    url_params      = {}
-    
-    params.each_pair do |key, value|
-      if url_params_list.include?(key)
-        url_params.store(key, value)
-        params.delete(key)
-      end
-    end
-    
-    params = {:method => 'get', :url_params => url_params}.merge(params)
-  end
 
   # Constructs the correct url (including authentication), uses RestClient to call Twitter,
   # parses the data with Hpricot, handles errors (both from RestClient and Twitter)
@@ -409,7 +433,6 @@ private
 
     # Simple authentication
     
-    puts params[:authenticate] != false
     if auth_supplied? and params[:authenticate] != false
       url = 'https://' + @username + ':' + @password + '@' + url
     else
@@ -428,7 +451,7 @@ private
           RestClient.delete(url)
       end
     rescue Exception => error
-      status = {:ok => false, :error_message => error.message, :exception => error.class}
+      status = {:ok => false, :error_message => error.message, :error_response => error.response, :exception => error.class}
     end
   
     # Parse with Hpricot and check for errors
@@ -444,6 +467,21 @@ private
     status = {:ok => true} unless status
     Response.new(response, url, status)
   end
+
+  def organize_params(params)
+    url_params_list = [:id, :user_id, :screen_name, :page, :since_id, :max, :count]
+    url_params      = {}
+
+    params.each_pair do |key, value|
+      if url_params_list.include?(key)
+        url_params.store(key, value)
+        params.delete(key)
+      end
+    end
+
+    params = {:method => 'get', :url_params => url_params}.merge(params)
+  end
+  
 end
 
 # A simple class to wrap around an API response.
