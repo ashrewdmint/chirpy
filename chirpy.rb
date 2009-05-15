@@ -75,8 +75,14 @@ class Chirpy
   
   # Gets the public timeline. Authentication is not required for this.
   
-  def public_timeline
+  def self.public_timeline
     get "statuses/public_timeline"
+  end
+  
+  # Instance method for public timeline
+  
+  def public_timeline
+    Chirpy.public_timeline
   end
   
   # Gets the authenticated user's friends' timeline.
@@ -468,7 +474,7 @@ class Chirpy
   
   #-- Help methods
   
-  def test
+  def self.test
     get "help/test"
   end
 
