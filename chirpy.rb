@@ -385,6 +385,30 @@ class Chirpy
   
   #-- Notification methods
   
+  # Makes the authenticated user follow a new person.
+  # Pass a username or a hash with one of the following options:
+  # - :user_id
+  # - :screen_name
+  
+  def follow(arg)
+    params = {:post => {}}
+    params = params.merge(arg) if arg.is_a?(Hash)
+    path  = arg.is_a?(Hash) ? "notifications/follow" : "notifications/follow/#{arg}"
+    post path, params
+  end
+
+  # Unfollows a person the authenticated user is following.
+  # Pass a username or a hash with one of the following options:
+  # - :user_id
+  # - :screen_name
+  
+  def leave(arg)
+    params = {:post => {}}
+    params = params.merge(arg) if arg.is_a?(Hash)
+    path  = arg.is_a?(Hash) ? "notifications/leave" : "notifications/leave/#{arg}"
+    post path, params
+  end
+  
   #-- Block methods
   
   #-- Help methods
