@@ -478,6 +478,7 @@ class Chirpy
     get "help/test"
   end
 
+private
   
   # Calls request. By default, request will use the get method
   
@@ -558,7 +559,31 @@ class Chirpy
     end
     
     status = {:ok => true} unless status
-    Response.new(response, url, status)
+    prepare_response(response, url, status)
+  end
+  
+  # Tacks on handy methods to the response.
+  # The status is a hash with error messages, if anything went wrong.
+  # The URL is the url requested when Twitter was called.
+  # Call the "ok?" method to quickly check if there was an error.
+  
+  def self.prepare_response(response, url, status)
+    response = Hpricot('') unless response
+    
+    class << response
+      attr_accessor :url, :status
+      
+      @url    = nil
+      @status = nil
+      
+      def ok?
+        status[:ok]
+      end
+    end
+    
+    response.url    = url
+    response.status = status
+    response
   end
 
   def self.organize_params(params)
@@ -575,31 +600,4 @@ class Chirpy
     params = {:method => 'get', :url_params => url_params}.merge(params)
   end
   
-end
-
-# A simple class to wrap around an API response.
-# - Data is what you got from the API
-# - URL is the URL of the API method
-# - Status is a hash which holds error messages, if any
-#
-# Use the "ok?" method to check for errors.
-
-class Response
-  attr_reader :data, :url, :status
-  
-  @data   = nil
-  @url    = nil
-  @status = nil
-  
-  def initialize(data, url, status)
-    @data   = data
-    @url    = url
-    @status = status
-  end
-  
-  # Checks if there are any errors
-  
-  def ok?
-    status[:ok]
-  end
 end
