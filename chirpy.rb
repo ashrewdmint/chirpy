@@ -411,7 +411,57 @@ class Chirpy
   
   #-- Block methods
   
+  # Makes the authenticated user block someone.
+  #
+  # Authentication required.
+  
+  def block(user)
+    post "blocks/create/#{user}"
+  end
+  
+  # Removes the authenticated user's block.
+  #
+  # Authentication required.
+  
+  def destroy_block(user)
+    delete "blocks/destroy/#{user}"
+  end
+  
+  # Checks if the authenticated user is blocking someone.
+  # Pass in a username or a hash with one of the following options:
+  # - :user_id
+  # - :screen_name
+  #
+  # Authentication required.
+  
+  def block_exists(arg)
+    params = arg.is_a?(Hash) ? arg : {}
+    path   = arg.is_a?(Hash) ? "blocks/exists" : "Blocks/exists/#{arg}"
+    result = get path, params
+  end
+  
+  # Returns a list of people the authenticated user is blocking.
+  # You can pass :page => x if you want to.
+  #
+  # Authentication required.
+  
+  def blocking(params = {})
+    get "blocks/blocking", params
+  end
+  
+  # Returns a list of the ids of the people the authenticated user is blocking.
+  #
+  # Authentication required.
+  
+  def blocking_ids
+    get "blocks/blocking/ids"
+  end
+  
   #-- Help methods
+  
+  def test
+    get "help/test"
+  end
 
 private
   
