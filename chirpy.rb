@@ -57,10 +57,19 @@ class Chirpy
   end
   
   # Turns authentication off.
+  
   def unauthenticate()
     @username = nil
     @password = nil
   end
+  
+  # Returns the username and password in a hash.
+  
+  def authentication
+    {:username => @username, :password => @password}
+  end
+
+  private :authentication
   
   #-- Timeline methods
   
@@ -463,31 +472,29 @@ class Chirpy
     get "help/test"
   end
 
-private
-  
-  # Returns true if username and password have been set.
-  # Returns false if otherwise.
-  
-  def auth_supplied?
-    @username and @password
-  end
   
   # Calls request. By default, request will use the get method
   
   def get(path, params = {})
-    request params.merge({:path => path, :method => 'get'})
+    Chirpy.request params.merge({:path => path, :method => 'get'}.merge(authentication))
   end
   
   # Calls request with post method
   
   def post(path, params = {})
-    request params.merge({:path => path, :method => 'post'})
+    Chirpy.request params.merge({:path => path, :method => 'post'}.merge(authentication))
   end
 
   # Calls request with delete method
   
   def delete(path, params = {})
-    request params.merge({:path => path, :method => 'delete'})
+    Chirpy.request params.merge({:path => path, :method => 'delete'}.merge(authentication))
+  end
+  
+  # Class method for get
+  
+  def self.get(path, params = {})
+    request params.merge({:path => path, :method => 'get'})
   end
 
   # Constructs the correct url (including authentication), uses RestClient to call Twitter,
@@ -500,18 +507,21 @@ private
   #
   # The Hpricot object can be retreived by calling the "data" method.
   
-  def request(params)
-    # Organize parameters
+  def self.request(params)
+    params = {:authenticate => true}.merge(params)
     params = organize_params(params)
-  
-    url  = @@root + params[:path] + '.xml?' + params[:url_params].to_url_params
-    user = params[:user]
+    url    = @@root + params[:path] + '.xml?' + params[:url_params].to_url_params
+    
+    username = params[:username]
     password = params[:password]
-
+    
+    auth_supplied      = !! username and !! password
+    use_authentication = params[:authenticate]
+    
     # Simple authentication
     
-    if auth_supplied? and params[:authenticate] != false
-      url = 'https://' + @username + ':' + @password + '@' + url
+    if auth_supplied and use_authentication
+      url = 'https://' + username + ':' + password + '@' + url
     else
       url = 'http://' + url
     end
@@ -545,7 +555,7 @@ private
     Response.new(response, url, status)
   end
 
-  def organize_params(params)
+  def self.organize_params(params)
     url_params_list = [:id, :user_id, :screen_name, :page, :since_id, :max, :count]
     url_params      = {}
 
