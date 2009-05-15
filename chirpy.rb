@@ -333,6 +333,9 @@ class Chirpy
     post "account/update_profile_colors", :post => post_data
   end
   
+  #-- TODO: update_profile_image and update_profile_background_image
+  #-- Methods delayed until I can figure out how to get RestClient working with them
+  
   # Updates the user's profile information. Pass in a hash with symbols as keys.
   #
   # From: http://apiwiki.twitter.com/Twitter-REST-API-Method%3A-account%C2%A0update_profile
