@@ -4,15 +4,15 @@ Chirpy is a simple Twitter client for Ruby, written using Hpricot and RestClient
 
 Everything Chirpy returns is a Hpricot object, which lets you easily search through XML soup and find what you need. You should familiarize yourself with Hpricot first: http://wiki.github.com/why/hpricot
 
-= Full documentation
+== Full documentation
 
 http://ashrewdmint.com/code/chirpy/
 
-= Some caveats
+== Some caveats
 
 Chirpy doesn't support OAuth for authentication, and right now, it can't update anyone's profile picture and background picture. In the future, though, I'd like to get those things working.
 
-= Examples
+== Examples
 
 Let's say you want to see the public timeline:
 
@@ -66,11 +66,11 @@ One last thing: some Twitter methods let you pass some extra GET parameters, lik
 
 Nifty, eh? Good luck, and enjoy!
 
-= License
+== License
 
 Licensed under the MIT license. Mayest thou go forth and redistributeth to thine heart's content.
 
-= Credits
+== Credits
 
 - Written by Andrew Smith (andrew.caleb.smith@gmail.com). Find me on Twitter: @ashrewdmint
 - Thanks to Why The Lucky Stiff for making Hpricot and Adam Wiggins for making RestClient
