@@ -2,23 +2,16 @@
 
 == Description
 
-Chirpy is a simple Twitter client for Ruby, written using Hpricot
-and RestClient.
+Chirpy is a simple Twitter client for Ruby, written using Hpricot and RestClient.
 
 * Github: http://github.com/ashrewdmint/chirpy
 * Documentation: http://ashrewdmint.com/code/chirpy
 
-== Features
-
-* Works with almost every Twitter API method, including search,
-  status updates, direct messaging, and more!
-* Uses Hpricot for XML parsing.
-
 == Caveats
 
-* Doesn't support OAuth yet.
-* Doesn't support file uploading methods (+profile_image_update+
-  and +profile_background_image_update+) yet.
+Currently, Chirpy doesn't support OAuth yet. It also can't upload images to Twitter
+(+profile_image_update+ and +profile_background_image_update+). However, I hope to
+support both of these things in the future.
 
 == Installation
 
@@ -37,7 +30,7 @@ If that failed too, you can do this:
 
 == Usage
 
-Once you have the gem installed, you have to require it at the top of your Ruby document.
+Once you have the gem installed, you have to require it at thetop of your Ruby document.
 
   require 'rubygems'
   require 'ashrewdmint-chirpy' # Could be 'chirpy' if you installed the gem manually

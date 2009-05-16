@@ -1,10 +1,10 @@
-# http://sneaq.net/textmate-wtf
-$:.reject! { |e| e.include? 'TextMate' }
-
 require 'rubygems'
 require 'test/unit'
-require 'matchy'
-require 'context'
-require 'mocha'
+require 'shoulda'
 
-require File.dirname(__FILE__) + '/../lib/chirpy'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+require 'chirpy'
+
+class Test::Unit::TestCase
+end
