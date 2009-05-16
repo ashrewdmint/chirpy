@@ -1,6 +1,8 @@
+require 'cgi'
 require 'rubygems'
 require 'restclient'
 require 'hpricot'
+require 'htmlentities'
 
 # Adds to_url_params and from_url_params methods to the Hash class.
 # I found the code from: http://www.ruby-forum.com/topic/69428
@@ -29,7 +31,6 @@ end
 # Chirpy is a simple Twitter client for Ruby, written using RestClient and Hpricot.
 
 class Chirpy
-  @@root    = 'twitter.com/'
   @username = nil
   @password = nil
   
@@ -70,6 +71,41 @@ class Chirpy
   end
 
   private :authentication
+  
+  #-- Utility methods
+  
+  # Search results have bold tags and links in them. This removes it all.
+  
+  def self.remove_crap(string)
+    remove_tags(decode_entities(string))
+  end
+  
+  # Removes tags.
+  
+  def self.remove_tags(string)
+    string.gsub(/<[^>]+>/, '')
+  end
+  
+  # Decodes HTML entities.
+  
+  def self.decode_entities(string)
+    HTMLEntities.new.decode(string)
+  end
+  
+  #-- Search methods
+  
+  # Searches Twitter. Supply a query and extra options in a hash (not required).
+  # Available options (go here for more details: http://apiwiki.twitter.com/Twitter-Search-API-Method)
+  # - :lang
+  # - :rpp
+  # - :page
+  # - :since_id
+  # - :geocode
+  
+  def self.search(query, params = {})
+    params = params.merge({:q => query})
+    get "search", params
+  end
   
   #-- Timeline methods
   
@@ -517,7 +553,11 @@ private
   def self.request(params)
     params = {:authenticate => true}.merge(params)
     params = organize_params(params)
-    url    = @@root + params[:path] + '.xml?' + params[:url_params].to_url_params
+    url    = 'twitter.com/' + params[:path] + '.xml?' + params[:url_params].to_url_params
+    
+    if url =~ /search/
+      url = 'search.' + url.sub(/xml/, 'atom')
+    end
     
     username = params[:username]
     password = params[:password]
@@ -587,8 +627,24 @@ private
   end
 
   def self.organize_params(params)
-    url_params_list = [:id, :user_id, :screen_name, :page, :since_id, :max, :count]
-    url_params      = {}
+    url_params_list = [
+        :id,
+        :user_id,
+        :screen_name,
+        :page,
+        :since_id,
+        :max,
+        :count,
+        :q,
+        :lang,
+        :rpp,
+        :geo_code,
+        :show_user
+    ]
+    url_params = {}
+    
+    # Escape query
+    params[:q] = CGI.escape(params[:q]) if params[:q]
 
     params.each_pair do |key, value|
       if url_params_list.include?(key)
@@ -596,7 +652,7 @@ private
         params.delete(key)
       end
     end
-
+    
     params = {:method => 'get', :url_params => url_params}.merge(params)
   end
   
