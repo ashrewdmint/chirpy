@@ -1,0 +1,76 @@
+= Chirpy
+
+Chirpy is a simple Twitter client for Ruby, written using Hpricot and RestClient.
+
+Everything Chirpy returns is a Hpricot object, which lets you easily search through XML soup and find what you need. You should familiarize yourself with Hpricot first: http://wiki.github.com/why/hpricot
+
+= Full documentation
+
+http://ashrewdmint.com/code/chirpy/
+
+= Some caveats
+
+Chirpy doesn't support OAuth for authentication, and right now, it can't update anyone's profile picture and background picture. In the future, though, I'd like to get those things working.
+
+= Examples
+
+Let's say you want to see the public timeline:
+
+  Chirpy.public_timeline.search('text').each do |text|
+    puts text.inner_html
+  end
+  
+That was easy! Note that everything after <tt>.public_timeline</tt> was just Hpricot magic.
+
+But what if I want to search Twitter? That's simple, too:
+
+  Chirpy.search('Murray Rothbard').search('content').each do |text|
+    puts text.inner_html
+  end
+  
+Well, that was certainly painless. Unfortunately, since the search method parses an RSS feed, there's a lot of entities and links making a mess of the text. Chirpy has a method to handle annoyances like that:
+
+  puts Chirpy.remove_crap(text.inner_html)
+
+But I'm getting ahead of myself. What if you want to post a new tweet?
+
+  chirpy = Chirpy.new('username', 'password')
+  chirpy.update_status("I'm posting this with Chirpy!")
+
+...or view a list of your friends?
+
+  chirpy.friends.search('name').each do |name|
+    puts name.inner_html + ' is a horrible person'
+  end
+
+...or look at peoples' favorite tweets?
+
+  chirpy.favorites # Your own favorites
+  chirpy.favorites('ashrewdmint') # My favorites!
+
+But what if something goes wrong? Well, it's easy to check for an error:
+
+  response = Chirpy.public_timeline
+  
+  if response.ok?
+    # Do something awesome
+  else
+    puts response.status.inspect
+  end
+
+If anything goes wrong, you can find error details in the status attribute. Just so you know, Chirpy adds two new attributes to the Hpricot response object: status and url.
+
+One last thing: some Twitter methods let you pass some extra GET parameters, like <tt>page</tt> or <tt>since_id</tt>. It's easy to do this with Chirpy, just pass those arguments in a hash:
+
+  chirpy.friends_timeline :page => 3
+
+Nifty, eh? Good luck, and enjoy!
+
+= License
+
+Licensed under the MIT license. Mayest thou go forth and redistributeth to thine heart's content.
+
+= Credits
+
+- Written by Andrew Smith (andrew.caleb.smith@gmail.com). Find me on Twitter: @ashrewdmint
+- Thanks to Why The Lucky Stiff for making Hpricot and Adam Wiggins for making RestClient
