@@ -1,9 +1,3 @@
-require 'cgi'
-require 'rubygems'
-require 'restclient'
-require 'hpricot'
-require 'htmlentities'
-
 # Adds to_url_params and from_url_params methods to the Hash class.
 # I found the code from: http://www.ruby-forum.com/topic/69428
 class Hash
