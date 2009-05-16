@@ -13,12 +13,11 @@ Gem::Specification.new do |s|
      "README.rdoc"
   ]
   s.files = [
-    ".document",
-     ".gitignore",
-     "LICENSE",
+    "LICENSE",
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "chirpy.gemspec",
      "lib/chirpy.rb",
      "test/chirpy_test.rb",
      "test/test_helper.rb"
