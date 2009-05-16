@@ -22,9 +22,25 @@ and RestClient.
 
 == Installation
 
-  sudo gem install chirpy
+  sudo gem install ashrewdmint-chirpy
+
+Or, if that doesn't work, try:
+
+  sudo gem install ashrewdmint-chirpy --source=http://gems.github.com
+
+If that failed too, you can do this:
+
+  $ git clone git://github.com/ashrewdmint/chirpy.git
+  $ cd chirpy
+  $ rake gem
+  $ sudo gem install pkg/chirpy-x.x.x.gem
 
 == Usage
+
+Once you have the gem installed, you have to require it at the top of your Ruby document.
+
+  require 'rubygems'
+  require 'ashrewdmint-chirpy' # Could be 'chirpy' if you installed the gem manually
 
 Everything Chirpy returns is a Hpricot object, which lets you
 easily search through XML soup and find what you need. You
