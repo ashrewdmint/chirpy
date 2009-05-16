@@ -5,7 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "chirpy"
-    gem.summary = "Chirpy is a simple Twitter client for Ruby, written using Hpricot and RestClient."
+    gem.summary = "A simple Twitter client for Ruby, written using Hpricot and RestClient."
+    gem.description = "Lets you easily interact with Twitter's API; post status updates, search Twitter, and more!"
     gem.email = "andrew.caleb.smith@gmail.com"
     gem.homepage = "http://github.com/ashrewdmint/chirpy"
     gem.authors = ["Andrew Smith"]
