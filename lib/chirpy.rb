@@ -551,9 +551,8 @@ private
   # The Hpricot object can be retreived by calling the "data" method.
   
   def self.request(params)
-    params = {:authenticate => true}.merge(params)
-    params = organize_params(params)
-    url    = 'twitter.com/' + params[:path] + '.xml?' + params[:url_params].to_url_params
+    params= organize_params({:authenticate => true}.merge(params))
+    url    = 'twitter.com/' + params[:path] + '.xml' + params[:url_params]
     
     if url =~ /search/
       url = 'search.' + url.sub(/xml/, 'atom')
@@ -652,6 +651,9 @@ private
         params.delete(key)
       end
     end
+    
+    url_params = url_params.to_url_params
+    url_params = '?' + url_params unless url_params == ''
     
     params = {:method => 'get', :url_params => url_params}.merge(params)
   end
