@@ -247,16 +247,25 @@ class Chirpy
   end
   
   # Gets a list of the messages sent to the authenticated user.
-  #
   # Authentication required.
+  #
+  # Optional parameters:
+  # - :since_id
+  # - :max_id
+  # - :count
+  # - :page
   
   def direct_messages(params = {})
     get "direct_messages", params
   end
   
   # Gets a list of the messages sent by the authenticated user.
-  #
   # Authentication required.
+  #
+  # Optional parameters:
+  # - :since_id
+  # - :max_id
+  # - :page
   
   def direct_messages_sent(params = {})
     get "direct_messages/sent", params
@@ -271,12 +280,15 @@ class Chirpy
     post "direct_messages/new", post_params
   end
   
-  # --Friendship methods
+  #-- Friendship methods
   
-  # Follow is automatically set to true!
-  # To override this, call create_friendship('ashrewdmint', :follow => false)
+  # Creates a friendship between authenticated user and another user.
+  # Authentication required.
   #
-  # Authentication required
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
+  # - :follow (automatically set to true)
   
   def create_friendship(user = nil, params = {})
     if user.is_a?(Hash)
@@ -284,13 +296,16 @@ class Chirpy
       user = nil
     end
     
-    path = user ? "friendships/create/#{user}" : "friendships/create"
+    path = user.is_a ? "friendships/create/#{user}" : "friendships/create"
     post path, {:follow => true}.merge(params)
   end
   
   # Destroys a friendship between the authenticated user and another user.
-  #
   # Authentication required.
+  #
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
   
   def destroy_friendship(user, params = {})
     if user.is_a?(Hash)
