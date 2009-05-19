@@ -120,11 +120,13 @@ class Chirpy
     Chirpy.public_timeline
   end
   
-  # Gets the authenticated user's friends' timeline.
+  # Gets the authenticated user's friends' timeline. Authentication required.
   #
-  # Example: chirpy.friends_timeline :page => 2
-  #
-  # Authentication required.
+  # Optional parameters:
+  # - :since_id
+  # - :max_id
+  # - :count
+  # - :page
   
   def friends_timeline(params = {})
     get "statuses/friends_timeline", params
@@ -132,8 +134,15 @@ class Chirpy
   
   # Gets a list of status updates from a specific user.
   # If no user is supplied, the authenticated user will be used.
-  #
   # Authentication required.
+  #
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
+  # - :since_id
+  # - :max_id
+  # - :count
+  # - :page
 
   def user_timeline(user = nil, params = {})
     if user.is_a?(Hash)
@@ -147,9 +156,13 @@ class Chirpy
     end
   end
   
-  # Gets mentions for the authenticated user.
+  # Gets mentions for the authenticated user. Authentication required.
   #
-  # Authentication required.
+  # Optional parameters:
+  # - :since_id
+  # - :max_id
+  # - :count
+  # - :page
 
   def mentions(params = {})
     get "statuses/mentions", params
@@ -163,9 +176,7 @@ class Chirpy
     get "statuses/show/#{status_id}"
   end
   
-  # Updates the status of the authenticated user.
-  #
-  # Authentication required, silly.
+  # Updates the status of the authenticated user. Authentication required, silly.
 
   def update_status(status)
     post "statuses/update", :post => {:status => status}
@@ -182,6 +193,10 @@ class Chirpy
   #-- User methods
   
   # Shows details for a specific user. Authentication is only required if the user is protected.
+  # 
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
   
   def show_user(user = nil, params = {})
     if user.is_a?(Hash)
@@ -195,6 +210,11 @@ class Chirpy
   
   # Gets a list of a user's friends.
   # If no user is supplied, the authenticated user will be used.
+  #
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
+  # - :page
 
   def friends(user = nil, params = {})
     if user.is_a?(Hash)
@@ -209,8 +229,12 @@ class Chirpy
   # Gets a list of a user's followers.
   # If no user is supplied, the authenticated user will be used.
   # However, you need to authenticate whether or not you supply the user parameter.
-  #
   # Authentication required.
+  #
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
+  # - :page
 
   def followers(user = nil, params = {})
     if user.is_a?(Hash)
