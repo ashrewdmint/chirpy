@@ -103,8 +103,7 @@ class Chirpy
   # - :geocode
   
   def self.search(query, params = {})
-    params = params.merge({:q => query})
-    get "search", params
+    get "search", params.merge({:q => query})
   end
   
   #-- Timeline methods
