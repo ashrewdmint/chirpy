@@ -1,15 +1,15 @@
 require 'test_helper'
 
 class ChirpyTest < Test::Unit::TestCase
-  @root = "http://twitter.com/"
+  @@root = "http://twitter.com/"
   
   context "Class methods" do
     should "request the public timeline URL" do
-      assert_equal @root + "statuses/public_timeline.xml", Chirpy.public_timeline.url
+      assert_equal @@root + "statuses/public_timeline.xml", Chirpy.public_timeline.url
     end
     
     should "request the test URL" do
-      assert_equal @root + "help/test.xml", Chirpy.test.url
+      assert_equal @@root + "help/test.xml", Chirpy.test.url
     end
     
     should "request a search URL" do
