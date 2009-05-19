@@ -134,6 +134,7 @@ class Chirpy
   
   # Gets a list of status updates from a specific user.
   # If no user is supplied, the authenticated user will be used.
+  # you may supply a hash as the only argument.
   # Authentication required.
   #
   # Optional parameters:
@@ -145,9 +146,8 @@ class Chirpy
   # - :page
 
   def user_timeline(user = nil, params = {})
-    path   = user.is_a?(Hash) ? "statuses/user_timeline" : "statuses/user_timeline/#{user}"
-    params = user if user.is_a?(Hash)
-    get path, params
+    args = [user, params]
+    get path_from_args('statuses/user_timeline', args), params_from_args(args)
   end
   
   # Gets mentions for the authenticated user. Authentication required.
@@ -187,19 +187,20 @@ class Chirpy
   #-- User methods
   
   # Shows details for a specific user. Authentication is only required if the user is protected.
-  # 
+  # you may supply a hash as the only argument.
+  #
   # Optional parameters:
   # - :user_id
   # - :screen_name
   
   def show_user(user = nil, params = {})
-    path   = user.is_a?(Hash) ? "users/show" : "users/show/#{user}"
-    params = user if user.is_a?(Hash)
-    get path, params
+    args = [user, params]
+    get path_from_args('users/show', args), params_from_args(params)
   end
   
   # Gets a list of a user's friends.
   # If no user is supplied, the authenticated user will be used.
+  # you may supply a hash as the only argument.
   #
   # Optional parameters:
   # - :user_id
@@ -207,15 +208,15 @@ class Chirpy
   # - :page
 
   def friends(user = nil, params = {})
-    path   = user.is_a?(Hash) ? "statuses/friends" : "statuses/friends/#{user}"
-    params = user if user.is_a(Hash)
-    get path, params
+    args = [user, params]
+    get path_from_args('statuses/friends', args), params_from_args(args)
   end
   
   # Gets a list of a user's followers.
   # If no user is supplied, the authenticated user will be used.
   # However, you need to authenticate whether or not you supply the user parameter.
   # Authentication required.
+  # You may supply a hash as the only argument.
   #
   # Optional parameters:
   # - :user_id
@@ -223,9 +224,8 @@ class Chirpy
   # - :page
 
   def followers(user = nil, params = {})
-    path   = user.is_a?(Hash) ? "statuses/followers" : "statuses/followers/#{user}"
-    params = user if user.is_a?(Hash)
-    get path, params
+    args = [user, params]
+    get path_from_args('statuses/followers', args), params_from_args(args)
   end
   
   # Gets a list of the messages sent to the authenticated user.
@@ -265,6 +265,7 @@ class Chirpy
   #-- Friendship methods
   
   # Creates a friendship between authenticated user and another user.
+  # You may supply a hash as the only argument.
   # Authentication required.
   #
   # Optional parameters:
@@ -273,12 +274,12 @@ class Chirpy
   # - :follow (automatically set to true)
   
   def create_friendship(user = nil, params = {})
-    path   = user.is_a?(Hash) ? "friendships/create" : "friendships/create/#{user}"
-    params = user if user.is_a?(Hash)
-    post path, {:follow => true}.merge(params)
+    args = [user, params]
+    post path_from_args('friendships/create', args), {:follow => true}.merge(params_from_args(args))
   end
   
   # Destroys a friendship between the authenticated user and another user.
+  # You may supply a hash as the only argument.
   # Authentication required.
   #
   # Optional parameters:
@@ -286,9 +287,8 @@ class Chirpy
   # - :screen_name
   
   def destroy_friendship(user, params = {})
-    path   = user.is_a(Hash) ? "friendships/create" : "friendships/create/#{user}"
-    params = user if user.is_a(Hash)
-    delete path, params
+    args = [user, params]
+    delete path_from_args('friendships/create', args), params_from_args(args)
   end
   
   # Checks if a friendship exists between two users; returns true or false if no error occured.
@@ -307,23 +307,28 @@ class Chirpy
   
   #-- Social graph methods
   
-  # Returns ids for someone's friends
+  # Returns ids for someone's friends. You may supply a hash as the only argument.
+  #
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
+  # - :page
   
   def friends_ids(user = nil, params = {})
-    path   = user.is_a?(Hash) ? "friends/ids" : "friends/ids/#{user}"
-    params = user if user.is_a?(Hash)
-    get path, params
+    args = [user, params]
+    get path_from_args('friends/ids', args), params_from_args(params)
   end
   
-  # Returns ids for someone's followers
+  # Returns ids for someone's followers. You may supply a hash as the only argument.
+  #
+  # Optional parameters:
+  # - :user_id
+  # - :screen_name
+  # - :page
   
   def followers_ids(user = nil, params = {})
-    if user.is_a?(Hash)
-      params = user
-      user = nil
-    end
-    path = user ? "friends/ids/#{user}" : "friends/ids"
-    get path, params
+    args = [user, params]
+    get path_from_args('followers/ids', args), params_from_args(params)
   end
   
   #-- Account methods
@@ -411,20 +416,17 @@ class Chirpy
   
   #-- Favorite methods
   
-  # Gets a list of a user's favorites. Pass :page => x to switch pages.
-  #
+  # Gets a list of a user's favorites.
+  # You may supply a hash as the only argument.
   # Authentication required.
+  #
+  # Optional parameters:
+  # - :id
+  # - :page
   
   def favorites(user = nil, params = {})
-    if user.is_a?(Hash)
-      params = user
-      user = nil
-    end
-    if user
-      get "favorites/#{user}", params
-    else
-      get "favorites", params
-    end
+    args = [user, params]
+    get path_from_args('favorites', args), params_from_args(args)
   end
   
   # Adds a tweet to the authenticated user's favorites.
@@ -445,34 +447,29 @@ class Chirpy
   
   #-- Notification methods
   
-  # Makes the authenticated user follow a new person.
+  # Makes the authenticated user follow a new person. Authentication required.
   # Pass a username or a hash with one of the following options:
   # - :user_id
   # - :screen_name
   
-  def follow(arg)
-    params = {:post => {}}
-    params = params.merge(arg) if arg.is_a?(Hash)
-    path  = arg.is_a?(Hash) ? "notifications/follow" : "notifications/follow/#{arg}"
-    post path, params
+  def follow(user_or_params)
+    args = [user_or_params]
+    post path_from_args('notifications/follow', args), params_from_args(args).merge({:post => {}})
   end
 
-  # Unfollows a person the authenticated user is following.
+  # Unfollows a person the authenticated user is following. Authentication required.
   # Pass a username or a hash with one of the following options:
   # - :user_id
   # - :screen_name
   
-  def leave(arg)
-    params = {:post => {}}
-    params = params.merge(arg) if arg.is_a?(Hash)
-    path  = arg.is_a?(Hash) ? "notifications/leave" : "notifications/leave/#{arg}"
-    post path, params
+  def leave(user_or_params)
+    args = [user_or_params]
+    post path_from_args('notifications/leave', args), params_from_args(params).merge({:post => {}})
   end
   
   #-- Block methods
   
   # Makes the authenticated user block someone.
-  #
   # Authentication required.
   
   def block(user)
@@ -480,7 +477,6 @@ class Chirpy
   end
   
   # Removes the authenticated user's block.
-  #
   # Authentication required.
   
   def destroy_block(user)
@@ -494,10 +490,9 @@ class Chirpy
   #
   # Authentication required.
   
-  def block_exists(arg)
-    params = arg.is_a?(Hash) ? arg : {}
-    path   = arg.is_a?(Hash) ? "blocks/exists" : "Blocks/exists/#{arg}"
-    result = get path, params
+  def block_exists(user_or_params)
+    args = [user_or_params]
+    get path_from_args('block/exists', args), params_from_args(params)
   end
   
   # Returns a list of people the authenticated user is blocking.
@@ -524,6 +519,22 @@ class Chirpy
   end
 
 private
+  
+  # Concatenates the username onto the path if the former is found in the arguments.
+  
+  def path_from_args(path, args)
+    username = nil
+    args.each { |arg| username = arg if arg.is_a?(String) }
+    username ? path + "/#{username}" : path
+  end
+  
+  # Finds and returns the hash in the arguments, or an empty hash if nothing is found.
+
+  def params_from_args(args)
+    params = {}
+    args.each { |arg| params = arg if arg.is_a?(Hash) and ! arg.empty? }
+    params
+  end
   
   # Calls request. By default, request will use the get method
   
