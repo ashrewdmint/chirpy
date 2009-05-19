@@ -25,8 +25,8 @@ If that failed too, you can do this:
 
   $ git clone git://github.com/ashrewdmint/chirpy.git
   $ cd chirpy
-  $ rake gem
-  $ sudo gem install pkg/chirpy-x.x.x.gem
+  $ gem build chirpy.gemspec
+  $ sudo gem install chirpy-x.x.x.gem
 
 == Usage
 
