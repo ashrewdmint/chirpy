@@ -284,8 +284,8 @@ class Chirpy
   #
   # Authentication required.
   
-  def friendship_exists?(able, baker)
-    response = get "friendships/exists", {:user_a => able, :user_b => baker}
+  def friendship_exists?(user_a, user_b)
+    response = get "friendships/exists", {:user_a => user_a, :user_b => user_b}
     if response.ok?
       response.data.%('friends').inner_html == 'true'
     else
@@ -551,7 +551,7 @@ private
   # The Hpricot object can be retreived by calling the "data" method.
   
   def self.request(params)
-    params= organize_params({:authenticate => true}.merge(params))
+    params = organize_params({:authenticate => true}.merge(params))
     url    = 'twitter.com/' + params[:path] + '.xml' + params[:url_params]
     
     if url =~ /search/
