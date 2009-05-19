@@ -145,15 +145,9 @@ class Chirpy
   # - :page
 
   def user_timeline(user = nil, params = {})
-    if user.is_a?(Hash)
-        params = user.merge(params)
-        user = nil
-    end
-    if user
-      get "statuses/user_timeline/#{user}", params
-    else
-      get "statuses/user_timeline", params
-    end
+    path   = user.is_a?(Hash) ? "statuses/user_timeline" : "statuses/user_timeline/#{user}"
+    params = user if user.is_a?(Hash)
+    get path, params
   end
   
   # Gets mentions for the authenticated user. Authentication required.
@@ -199,12 +193,8 @@ class Chirpy
   # - :screen_name
   
   def show_user(user = nil, params = {})
-    if user.is_a?(Hash)
-        params = user.merge(params)
-        user = nil
-    end
-    
-    path = user ? "users/show/#{user}" : "users/show"
+    path   = user.is_a?(Hash) ? "users/show" : "users/show/#{user}"
+    params = user if user.is_a?(Hash)
     get path, params
   end
   
@@ -217,12 +207,8 @@ class Chirpy
   # - :page
 
   def friends(user = nil, params = {})
-    if user.is_a?(Hash)
-      params = user
-      user = nil
-    end
-    
-    path = user ? "statuses/friends/#{user}" : "statuses/friends"
+    path   = user.is_a?(Hash) ? "statuses/friends" : "statuses/friends/#{user}"
+    params = user if user.is_a(Hash)
     get path, params
   end
   
@@ -237,12 +223,8 @@ class Chirpy
   # - :page
 
   def followers(user = nil, params = {})
-    if user.is_a?(Hash)
-      params = user
-      user = nil
-    end
-    
-    path = user ? "statuses/followers/#{user}" : "statuses/followers"
+    path   = user.is_a?(Hash) ? "statuses/followers" : "statuses/followers/#{user}"
+    params = user if user.is_a?(Hash)
     get path, params
   end
   
@@ -291,12 +273,8 @@ class Chirpy
   # - :follow (automatically set to true)
   
   def create_friendship(user = nil, params = {})
-    if user.is_a?(Hash)
-      params = user
-      user = nil
-    end
-    
-    path = user.is_a ? "friendships/create/#{user}" : "friendships/create"
+    path   = user.is_a?(Hash) ? "friendships/create" : "friendships/create/#{user}"
+    params = user if user.is_a?(Hash)
     post path, {:follow => true}.merge(params)
   end
   
@@ -308,12 +286,8 @@ class Chirpy
   # - :screen_name
   
   def destroy_friendship(user, params = {})
-    if user.is_a?(Hash)
-      params = user
-      user = nil
-    end
-    
-    path = user ? "friendships/create/#{user}" : "friendships/create"
+    path   = user.is_a(Hash) ? "friendships/create" : "friendships/create/#{user}"
+    params = user if user.is_a(Hash)
     delete path, params
   end
   
@@ -336,11 +310,8 @@ class Chirpy
   # Returns ids for someone's friends
   
   def friends_ids(user = nil, params = {})
-    if user.is_a?(Hash)
-      params = user
-      user = nil
-    end
-    path = user ? "friends/ids/#{user}" : "friends/ids"
+    path   = user.is_a?(Hash) ? "friends/ids" : "friends/ids/#{user}"
+    params = user if user.is_a?(Hash)
     get path, params
   end
   
