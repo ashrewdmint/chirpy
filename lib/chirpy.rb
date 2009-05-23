@@ -288,7 +288,7 @@ class Chirpy
   
   def destroy_friendship(user, params = {})
     args = [user, params]
-    delete path_from_args('friendships/create', args), params_from_args(args)
+    delete path_from_args('friendships/destroy', args), params_from_args(args)
   end
   
   # Checks if a friendship exists between two users; returns true or false if no error occured.
@@ -464,7 +464,7 @@ class Chirpy
   
   def leave(user_or_params)
     args = [user_or_params]
-    post path_from_args('notifications/leave', args), params_from_args(params).merge({:post => {}})
+    post path_from_args('notifications/leave', args), params_from_args(args).merge({:post => {}})
   end
   
   #-- Block methods
@@ -492,7 +492,7 @@ class Chirpy
   
   def block_exists(user_or_params)
     args = [user_or_params]
-    get path_from_args('block/exists', args), params_from_args(params)
+    get path_from_args('block/exists', args), params_from_args(args)
   end
   
   # Returns a list of people the authenticated user is blocking.
