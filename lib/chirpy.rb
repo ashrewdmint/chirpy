@@ -262,6 +262,14 @@ class Chirpy
     post "direct_messages/new", post_params
   end
   
+  # Destroys a direct message.
+  # 
+  # Authentication required.
+  
+  def destroy_direct_message(direct_message_id)
+    delete "direct_messages/destroy/#{direct_message_id}"
+  end
+  
   #-- Friendship methods
   
   # Creates a friendship between authenticated user and another user.
